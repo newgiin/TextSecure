@@ -8,7 +8,7 @@
 
     <permission android:name="org.thoughtcrime.securesms.ACCESS_SECRETS"
                 android:label="Access to TextSecure Secrets"
-                android:protectionLevel="signature" />    
+                android:protectionLevel="signature" />
     
 	<uses-permission android:name="org.thoughtcrime.securesms.ACCESS_SECRETS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>

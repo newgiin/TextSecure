@@ -30,6 +30,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.telephony.PhoneNumberUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -49,6 +51,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 import org.thoughtcrime.securesms.components.RecipientsPanel;
 import org.thoughtcrime.securesms.crypto.KeyExchangeInitiator;
 import org.thoughtcrime.securesms.crypto.KeyExchangeProcessor;
@@ -239,12 +242,19 @@ public class ConversationActivity extends PassphraseRequiredSherlockFragmentActi
         menu.findItem(R.id.menu_distribution_conversation).setChecked(true);
       }
     }
-
+    
+    if (getRecipients().getPrimaryRecipient().getName() == null) 
+    {
+    	MenuItem addContactItem = menu.add(getResources().getString(R.string.conversation__menu_add_contact));
+    	addContactItem.setOnMenuItemClickListener(new AddContactListener());
+    }
     inflater.inflate(R.menu.conversation, menu);
+
+    
     super.onPrepareOptionsMenu(menu);
     return true;
   }
-
+  
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     super.onOptionsItemSelected(item);
@@ -415,7 +425,7 @@ public class ConversationActivity extends PassphraseRequiredSherlockFragmentActi
     builder.setPositiveButton(android.R.string.ok, null);
     builder.show();
   }
-
+  
   private void handleDeleteThread() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle(R.string.ConversationActivity_delete_thread_confirmation);
@@ -857,6 +867,18 @@ public class ConversationActivity extends PassphraseRequiredSherlockFragmentActi
     }
   }
 
+  private class AddContactListener implements OnMenuItemClickListener {
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		Intent intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
+		intent.putExtra(ContactsContract.Intents.Insert.PHONE, 
+		    getRecipients().getPrimaryRecipient().getNumber());
+		startActivity(intent);
+	    
+		return true;
+	}
+  }
+  
   private class AttachmentTypeListener implements DialogInterface.OnClickListener {
     @Override
     public void onClick(DialogInterface dialog, int which) {
